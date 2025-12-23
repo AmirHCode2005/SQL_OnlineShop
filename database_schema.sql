@@ -1,0 +1,79 @@
+CREATE DATABASE IF NOT EXISTS sql_online_shop;
+
+USE sql_online_shop;
+
+CREATE TABLE IF NOT EXISTS customers
+(
+id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(100) NOT NULL,
+email VARCHAR(100) NOT NULL UNIQUE,
+password VARCHAR(255) NOT NULL,
+created_at DATETIME DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS categories
+(
+id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(100) NOT NULL,
+parent_id INT NULL,
+FOREIGN KEY (parent_id) REFERENCES categories(id)
+ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS products
+(
+id INT AUTO_INCREMENT PRIMARY KEY,
+name VARCHAR(100) NOT NULL,
+description TEXT,
+price DECIMAL(10,2) NOT NULL,
+stock INT NOT NULL DEFAULT 0,
+category_id INT,
+created_at DATETIME DEFAULT NOW(),
+FOREIGN KEY (category_id) REFERENCES categories(id)
+ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS orders
+(
+id INT AUTO_INCREMENT PRIMARY KEY,
+user_id INT NOT NULL,
+total_price DECIMAL(10,2) NOT NULL,
+status ENUM('pending','paid','shipped','cancelled') DEFAULT 'pending',
+created_at DATETIME DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS order_item
+(
+id INT AUTO_INCREMENT PRIMARY KEY,
+order_id INT NOT NULL,
+product_id INT NOT NULL,
+quantity INT NOT NULL,
+price DECIMAL(10,2) NOT NULL,
+FOREIGN KEY (order_id) REFERENCES orders(id)
+ON DELETE CASCADE,
+FOREIGN KEY (product_id) REFERENCES products(id)
+ON DELETE CASCADE	
+);
+
+CREATE TABLE IF NOT EXISTS payment
+(
+id INT AUTO_INCREMENT PRIMARY KEY,
+order_id INT NOT NULL,
+payment_method VARCHAR(50) NOT NULL,
+amount DECIMAL(10,2) NOT NULL,
+paid_at DATETIME DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS reviews
+(
+id INT AUTO_INCREMENT PRIMARY KEY,
+user_id INT NOT NULL,
+product_id INT NOT NULL,
+rating INT CHECK (rating BETWEEN 1 AND 5),
+created_at DATETIME DEFAULT NOW(),
+FOREIGN KEY (user_id) REFERENCES customers(id)
+ON DELETE CASCADE,
+FOREIGN KEY (product_id) REFERENCES products(id)
+ON DELETE CASCADE,
+UNIQUE (user_id,product_id)
+)
