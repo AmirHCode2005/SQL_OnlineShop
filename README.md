@@ -1,4 +1,4 @@
-# 🛒 Online Shop Database
+# 🛒 Online Shop Database 
 
 Welcome to the **Online Shop MySQL Database** project!  
 A full-featured e-commerce database simulation, complete with **users, products, categories, orders, order items, reviews, and payments**.
